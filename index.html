@@ -4,21 +4,28 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Carosello Studenti</title>
+    <title>Memory Game Studenti</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./css/style.css">
 </head>
 
 <body>
 
-    <main>
+    <main class="py-4">
         <div class="container">
-            <div class="row board row-cols-5">
+            <h1 class="text-center mb-4">Memory Game Studenti</h1>
 
+            <div class="text-center mb-3">
+                <p class="mb-2">Trova tutte le coppie</p>
+                <button id="restart-btn" class="btn btn-primary">Ricomincia</button>
             </div>
+
+            <div class="row board row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-3"></div>
+
+            <div id="message" class="text-center mt-4 fw-bold"></div>
         </div>
     </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
     <script src="./scripts/studentsInfo.js"></script>
     <script src="./scripts/memory.js"></script>
 </body>
