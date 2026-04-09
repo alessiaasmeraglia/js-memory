@@ -9,13 +9,12 @@ let cardImages = [];
 let cards = [];
 
 
+
 // creo l'array delle immagini
 function createImagesArray() {
     cardImages = [];
-    let i = 0;
 
-    while (i < studentsInfo.length) {
-        cardImages.push(studentsInfo[i].image);
-        i++;
+    for (const student of studentsInfo) {
+        cardImages.push(student.image);
     }
 }
