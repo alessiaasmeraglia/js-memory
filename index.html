@@ -10,18 +10,23 @@
 </head>
 
 <body>
-
     <main class="py-4">
         <div class="container">
             <h1 class="text-center mb-4">Memory Game Studenti</h1>
 
             <div class="text-center mb-3">
                 <p class="mb-2">Trova tutte le coppie</p>
+
+                <div class="mb-3">
+                    <button class="btn btn-outline-success difficulty-btn" data-pairs="8">Facile 4x4</button>
+                    <button class="btn btn-outline-warning difficulty-btn" data-pairs="18">Medio 6x6</button>
+                </div>
+
                 <button id="restart-btn" class="btn btn-primary">Ricomincia</button>
             </div>
 
-            <div class="row board row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-3"></div>
-
+            <div id="timer" class="text-center mb-3"></div>
+            <div class="board"></div>
             <div id="message" class="text-center mt-4 fw-bold"></div>
         </div>
     </main>

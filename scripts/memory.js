@@ -1,24 +1,23 @@
 //Memory Game Studenti
 
-
 const board = document.querySelector('.board');
 const message = document.getElementById('message');
 const restartBtn = document.getElementById('restart-btn');
+const timer = document.getElementById('timer');
+const difficultyButtons = document.querySelectorAll('.difficulty-btn');
 
 let cardImages = [];
 let cards = [];
 let flippedCards = [];
 let lockBoard = false;
 let matchedPairs = 0;
+let countdown = 60;
+let timerInterval = null;
+let gameEnded = false;
 
-//creo l'array delle immagini delle carte, prendendo i dati dallo studente
-function createImagesArray() {
-    cardImages = [];
+//definisco il numero totale di coppie di carte da trovare
+let totalPairs = 8; //imposto il numero totale di coppie da trovare a 8, ma può essere modificato in base alla difficoltà scelta dall'utente
 
-    for (const student of studentsInfo) {
-        cardImages.push(student.image);
-    }
-}
 
 //creo l'algoritmo Fisher-Yates per mescolare le carte
 function fisherYatesShuffle(array) {
@@ -34,6 +33,42 @@ function fisherYatesShuffle(array) {
         array[i] = array[j];
         array[j] = temp;
     }
+}
+
+
+//creo l'array delle immagini delle carte
+function createImagesArray() {
+    cardImages = []; //svuoto l'array delle immagini prima di ricrearlo
+
+    const shuffledStudents = []; //creo un array temporaneo per mescolare gli studenti
+
+    //per ogni studente presente nell'array studentsInfo, lo aggiungo all'array temporaneo shuffledStudents
+    for (const student of studentsInfo) {
+        shuffledStudents.push(student);
+    }
+
+    fisherYatesShuffle(shuffledStudents); //mescolo l'array temporaneo shuffledStudents con l'algoritmo Fisher-Yates
+
+    let count = 0; //creo un contatore per tenere traccia del numero di coppie di carte aggiunte all'array cardImages
+
+    //per ogni studente presente nell'array temporaneo shuffledStudents, se il contatore è minore del numero totale di coppie da trovare 
+    for (const student of shuffledStudents) {
+        if (count >= totalPairs) {
+            break;
+        }
+
+        //aggiungo l'immagine dello studente all'array cardImages e incremento il contatore
+        cardImages.push(student.image);
+        count++;
+    }
+}
+
+//imposto la griglia della board in base al numero totale di carte da visualizzare
+function setBoardGrid() {
+    const totalCards = cardImages.length * 2; //calcolo il numero totale di carte da visualizzare come il doppio del numero di immagini presenti nell'array cardImages (perché ogni immagine deve essere duplicata per creare le coppie)
+    const columns = Math.sqrt(totalCards);//calcolo il numero di colonne della griglia come la radice quadrata del numero totale di carte
+
+    board.style.gridTemplateColumns = `repeat(${columns}, 100px)`; //imposto la proprietà grid-template-columns della board per creare una griglia con il numero di colonne calcolato e una larghezza fissa di 100px per ogni colonna
 }
 
 //creo le carte del gioco, duplicando le immagini per creare le coppie e mescolandole con l'algoritmo Fisher-Yates
@@ -112,7 +147,7 @@ function handleCardClick(event) {
 
     //se ci sono due carte girate, controllo se sono uguali
     if (flippedCards.length === 2) {
-        checkMatch();
+        checkMatch(); //chiamo la funzione checkMatch per controllare se le due carte girate sono uguali
     }
 }
 
@@ -132,9 +167,11 @@ function checkMatch() {
         flippedCards = []; //svuoto l'array delle carte girate
         lockBoard = false; //riattivo la board
 
-        //se tutte le coppie sono state trovate, mostro un messaggio di vittoria
-        if (matchedPairs === cardImages.length) {
-            message.textContent = 'Hai trovato tutte le coppie!';
+        //se tutte le coppie sono state trovate, termino il gioco
+        if (matchedPairs === totalPairs) {
+            gameEnded = true; //imposto la variabile gameEnded a true per indicare che il gioco è terminato
+            clearInterval(timerInterval); //fermo il timer
+            message.textContent = 'Hai trovato tutte le coppie!'; //mostro un messaggio di vittoria all'utente
         }
     } else {
         //se le carte non sono uguali, le giro di nuovo dopo un secondo
@@ -148,6 +185,32 @@ function checkMatch() {
     }
 }
 
+//gestisco il timer del gioco
+function startTimer() {
+    clearInterval(timerInterval); //fermo eventuali timer precedenti
+
+    //imposto il tempo iniziale in base alla difficoltà scelta dall'utente
+    if (totalPairs === 8) {
+        countdown = 40; //imposto il tempo iniziale a 40 secondi per la difficoltà facile (8 coppie)
+    } else if (totalPairs === 18) {
+        countdown = 75; //imposto il tempo iniziale a 75 secondi per la difficoltà media (18 coppie)
+    }
+
+    timer.textContent = 'Tempo rimasto: ' + countdown + ' secondi';
+
+    timerInterval = setInterval(function () {
+        countdown--;
+        timer.textContent = 'Tempo rimasto: ' + countdown + ' secondi';
+
+        if (countdown <= 0) {
+            clearInterval(timerInterval);
+            gameEnded = true;
+            lockBoard = true;
+            message.textContent = 'Tempo scaduto! Hai trovato ' + matchedPairs + ' coppie su ' + totalPairs + '.';
+        }
+    }, 1000);
+}
+
 // reset gioco
 function resetGame() {
     flippedCards = []; //svuoto l'array delle carte girate
@@ -158,6 +221,8 @@ function resetGame() {
     createImagesArray(); //ricreo l'array delle immagini delle carte
     createCards(); //ricreo le carte del gioco
     renderCards(); //ristampo le carte nella board
+    setBoardGrid(); //imposto la griglia della board in base al numero totale di carte da visualizzare
+    startTimer(); //avvio il timer del gioco
 }
 
 restartBtn.addEventListener('click', resetGame); //aggiungo un event listener al pulsante di restart per chiamare la funzione resetGame quando viene cliccato
