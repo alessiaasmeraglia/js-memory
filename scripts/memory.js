@@ -1,11 +1,16 @@
 //Memory Game Studenti
-
+console.log('inizio file');
+window.onerror = function (msg, src, line, col, err) {
+    console.log('ERRORE JS:', msg, 'riga:', line);
+};
+//seleziono gli elementi HTML
 const board = document.querySelector('.board');
 const message = document.getElementById('message');
 const restartBtn = document.getElementById('restart-btn');
 const timer = document.getElementById('timer');
 const difficultyButtons = document.querySelectorAll('.difficulty-btn');
 
+//definisco le variabili globali
 let cardImages = [];
 let cards = [];
 let flippedCards = [];
@@ -137,8 +142,8 @@ function handleCardClick(event) {
     const isFlipped = card.classList.contains('flipped'); //controllo se la carta è già girata
     const isMatched = card.classList.contains('matched'); //controllo se la carta è già abbinata
     
-    //se la board è bloccata, se la carta è già girata o se la carta è già abbinata, non faccio nulla
-    if (lockBoard || isFlipped || isMatched) {
+    //se il gioco è terminato, la board è bloccata, la carta è già girata o la carta è già abbinata, non faccio nulla
+    if (gameEnded || lockBoard || isFlipped || isMatched) {
         return;
     }
     //giro la carta e la aggiungo all'array delle carte girate
@@ -158,6 +163,7 @@ function checkMatch() {
     const firstCard = flippedCards[0]; //assegno la prima carta girata alla variabile firstCard
     const secondCard = flippedCards[1]; //assegno la seconda carta girata alla variabile secondCard
 
+    
     //se le carte sono uguali, le abbino e incremento il contatore delle coppie abbinate
     if (firstCard.dataset.value === secondCard.dataset.value) {
         firstCard.classList.add('matched'); //aggiungo la classe 'matched' alla prima carta
@@ -217,12 +223,21 @@ function resetGame() {
     lockBoard = false; //riattivo la board
     matchedPairs = 0; //azzero il contatore delle coppie abbinate
     message.textContent = ''; //svuoto il messaggio di vittoria
+    gameEnded = false; //imposto la variabile gameEnded a false per indicare che il gioco è in corso
 
     createImagesArray(); //ricreo l'array delle immagini delle carte
     createCards(); //ricreo le carte del gioco
     renderCards(); //ristampo le carte nella board
     setBoardGrid(); //imposto la griglia della board in base al numero totale di carte da visualizzare
     startTimer(); //avvio il timer del gioco
+}
+
+//aggiungo un event listener a ciascun pulsante di difficoltà per chiamare la funzione resetGame con il numero di coppie corrispondente quando viene cliccato
+for (const button of difficultyButtons) {
+    button.addEventListener('click', function () {
+        totalPairs = Number(button.dataset.pairs); //assegno il numero di coppie corrispondente al pulsante cliccato alla variabile totalPairs, convertendo il valore da stringa a numero con Number()
+        resetGame();
+    });
 }
 
 restartBtn.addEventListener('click', resetGame); //aggiungo un event listener al pulsante di restart per chiamare la funzione resetGame quando viene cliccato
