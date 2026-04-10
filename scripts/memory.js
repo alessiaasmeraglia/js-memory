@@ -1,8 +1,5 @@
 //Memory Game Studenti
-console.log('inizio file');
-window.onerror = function (msg, src, line, col, err) {
-    console.log('ERRORE JS:', msg, 'riga:', line);
-};
+
 //seleziono gli elementi HTML
 const board = document.querySelector('.board');
 const message = document.getElementById('message');
